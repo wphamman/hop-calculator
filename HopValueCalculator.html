@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hop Value Calculator | Cactus Craft Brewing Solutions</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Professional hop value calculator for brewers. Compare traditional T90 pellets vs advanced hop products like FLEX, INCOGNITO, and LupoMAX. Calculate IBU, wort loss, and cost savings per batch.">
+    <meta name="keywords" content="hop calculator, brewing calculator, IBU calculator, hop cost, T90 pellets, FLEX hops, INCOGNITO, LupoMAX, Cactus Craft, South Africa brewing">
+    <meta name="author" content="Cactus Craft">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.cactuscraft.co.za/hop-calculator">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.cactuscraft.co.za/hop-calculator">
+    <meta property="og:title" content="Hop Value Calculator | Cactus Craft">
+    <meta property="og:description" content="Compare traditional vs advanced hop products. Calculate IBU, wort loss, and true cost savings per batch.">
+    <meta property="og:image" content="https://www.cactuscraft.co.za/images/hop-calculator-preview.png">
+    <meta property="og:site_name" content="Cactus Craft">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.cactuscraft.co.za/hop-calculator">
+    <meta name="twitter:title" content="Hop Value Calculator | Cactus Craft">
+    <meta name="twitter:description" content="Compare traditional vs advanced hop products. Calculate IBU, wort loss, and true cost savings per batch.">
+    <meta name="twitter:image" content="https://www.cactuscraft.co.za/images/hop-calculator-preview.png">
+
+    <!-- Favicon (update path as needed) -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 20px; font-family: 'Helvetica Neue', Arial, sans-serif; background: #fff; color: #333; line-height: 1.5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .grid { display: grid; gap: 20px; }
+        @media (min-width: 1024px) { .grid-3 { grid-template-columns: 2fr 1fr; } .grid-2 { grid-template-columns: 1fr 1fr; } .grid-4 { grid-template-columns: repeat(4, 1fr); } }
+        .mb-4 { margin-bottom: 20px; } .relative { position: relative; }
+        :root { --green: #4a7c4a; --black: #1a1a1a; --gray: #f3f3f3; --border: #e0e0e0; --red: #d32f2f; }
+        h1 { margin: 0; font-size: 24px; color: var(--black); text-transform: uppercase; }
+        p { margin: 5px 0 0; color: #666; font-size: 14px; }
+        label { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555; display: block; margin-bottom: 5px; }
+        .value-lg { font-size: 28px; font-weight: bold; color: var(--black); }
+        .section-title { font-size: 16px; font-weight: bold; color: var(--black); text-transform: uppercase; border-bottom: 2px solid var(--gray); padding-bottom: 10px; margin-bottom: 15px; }
+        .card { background: white; border: 1px solid var(--border); padding: 20px; }
+        .highlight-card { background: var(--black); color: white; border-top: 4px solid var(--green); }
+        .highlight-card h3 { color: #aaa; margin: 0; font-size: 11px; text-transform: uppercase; }
+        .highlight-card .value-lg { color: white; }
+        .highlight-card p { color: var(--green); font-weight: bold; text-transform: uppercase; font-size: 11px; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; font-size: 13px; transition: border-color 0.2s, box-shadow 0.2s; }
+        input:focus, select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(74, 124, 74, 0.2); }
+        button:focus { outline: none; box-shadow: 0 0 0 3px rgba(74, 124, 74, 0.3); }
+        a:focus { outline: 2px solid var(--green); outline-offset: 2px; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+        .input-suffix { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #999; pointer-events: none; }
+        .action-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer; margin-top: 10px; }
+        .btn-calc { background: var(--green); color: white; } .btn-calc:hover { background: #3a633a; }
+        .btn-reset { background: var(--gray); color: #666; border: 1px solid #ccc; }
+        .addition-row { display: grid; grid-template-columns: 0.6fr 1.8fr 0.6fr 0.6fr 0.7fr 0.6fr 0.7fr auto; gap: 8px; margin-bottom: 8px; align-items: center; background: #fafafa; padding: 8px; border: 1px solid #eee; }
+        .addition-header { display: grid; grid-template-columns: 0.6fr 1.8fr 0.6fr 0.6fr 0.7fr 0.6fr 0.7fr auto; gap: 8px; margin-bottom: 5px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #666; padding: 0 8px; }
+        .btn-remove { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; padding: 6px 10px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-add { background: var(--gray); color: var(--green); border: 1px dashed var(--green); padding: 8px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        .scenario-b .addition-row { background: #e8f5e9; border-color: #c8e6c9; }
+        .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+        .result-row.total span:last-child { font-size: 16px; font-weight: bold; color: var(--black); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="mb-4" style="border-bottom: 1px solid #eee; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1>Professional Hop Value Calculator</h1>
+                <p>Recipe Cost Optimization with Advanced Hop Products</p>
+            </div>
+            <a href="https://www.cactuscraft.co.za" aria-label="Visit Cactus Craft website" style="text-decoration: none; color: var(--green); font-weight: bold; font-size: 14px; text-transform: uppercase; border: 2px solid var(--green); padding: 8px 16px; transition: all 0.2s;">
+                🌵 Cactus Craft
+            </a>
+        </header>
+
+        <div class="grid grid-3 mb-4">
+            <div class="card">
+                <div class="section-title">Brewing Parameters</div>
+                <div class="grid grid-4" style="gap:15px;">
+                    <div><label>Currency</label><input type="text" id="currency" value="R"></div>
+                    <div><label>Batch Size</label><div class="relative"><input type="number" id="batchSize" value="20" step="0.1"><span class="input-suffix">hL</span></div></div>
+                    <div><label>Wort Gravity</label><div class="relative"><input type="number" id="gravity" value="1.050" step="0.001"><span class="input-suffix">SG</span></div></div>
+                    <div><label>Revenue / L</label><div class="relative"><input type="number" id="beerPrice" value="25"><span class="input-suffix currency-label">R</span></div></div>
+                </div>
+                <div style="margin-top: 15px;"><label>T90 Baseline Specs</label><div class="grid grid-2" style="gap: 10px; margin-top: 5px;">
+                    <div class="relative"><input type="number" id="t90Price" value="350" step="10"><span class="input-suffix"><span class="currency-label">R</span>/kg</span></div>
+                    <div class="relative"><input type="number" id="t90Absorption" value="14" step="0.5"><span class="input-suffix">L/kg</span></div>
+                </div></div>
+                <div class="grid grid-2" style="gap:10px; margin-top:15px;">
+                    <button id="btnReset" class="action-btn btn-reset" aria-label="Reset calculator to default values">Reset</button>
+                    <button id="btnCalculate" class="action-btn btn-calc" aria-label="Calculate hop values and costs">Calculate</button>
+                </div>
+            </div>
+            <div class="card highlight-card">
+                <h3>Total Net Benefit</h3>
+                <div class="value-lg" id="netBenefitDisplay">+R 0.00</div>
+                <p id="netBenefitText">Savings per batch</p>
+            </div>
+        </div>
+
+        <div class="grid grid-2">
+            <div>
+                <div class="card" style="border-left: 4px solid #999;" role="region" aria-labelledby="scenarioATitle">
+                    <div class="section-title" id="scenarioATitle">Scenario A: Traditional</div>
+                    <div class="mb-4">
+                        <div class="addition-header"><div>Time (min)</div><div>Product</div><div>Temp (°C)</div><div>Alpha (%)</div><div>Dose (kg)</div><div>Util (%)</div><div>IBU</div><div></div></div>
+                        <div id="additionsContainerA"></div>
+                        <button id="btnAddRowA" class="btn-add" aria-label="Add hop addition to Scenario A">+ Add Hop</button>
+                    </div>
+                    <div style="padding: 15px; border-top: 1px solid #eee;">
+                        <div class="result-row"><span>Total Dosage</span><span style="font-weight:bold" id="resT90TotalKg">0.00 kg</span></div>
+                        <div class="result-row"><span>Total IBU</span><span style="font-weight:bold" id="resT90IBU">0</span></div>
+                        <div class="result-row"><span>Hop Cost</span><span style="font-weight:bold" id="resT90Cost">R 0</span></div>
+                        <div class="result-row"><span>Wort Loss</span><span style="font-weight:bold; color:var(--red)" id="resT90Loss">0.0 L</span></div>
+                        <div class="result-row"><span>Revenue Lost</span><span style="font-weight:bold; color:var(--red)" id="resT90RevLost">R 0</span></div>
+                        <div class="result-row total"><span>TOTAL A</span><span id="resT90Total">R 0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="card scenario-b" style="border-left: 4px solid var(--green);" role="region" aria-labelledby="scenarioBTitle">
+                    <div class="section-title" id="scenarioBTitle" style="color:var(--green)">Scenario B: Advanced</div>
+                    <div class="mb-4">
+                        <div class="addition-header"><div>Time (min)</div><div>Product</div><div>Temp (°C)</div><div>Alpha (%)</div><div>Dose (kg)</div><div>Util (%)</div><div>IBU</div><div></div></div>
+                        <div id="additionsContainerB"></div>
+                        <button id="btnAddRowB" class="btn-add" aria-label="Add hop product to Scenario B">+ Add Product</button>
+                    </div>
+                    <div style="padding: 15px; border-top: 1px solid #c8e6c9;">
+                        <div class="result-row"><span>Total Dosage</span><span style="font-weight:bold" id="resAdvTotalKg">0.00 kg</span></div>
+                        <div class="result-row"><span>Total IBU</span><span style="font-weight:bold" id="resAdvIBU">0</span></div>
+                        <div class="result-row"><span>Hop Cost</span><span style="font-weight:bold" id="resAdvCost">R 0</span></div>
+                        <div class="result-row"><span>Wort Loss</span><span style="font-weight:bold; color:var(--green)" id="resAdvLoss">0.0 L</span></div>
+                        <div class="result-row"><span>Revenue Lost</span><span style="font-weight:bold; color:var(--green)" id="resAdvRevLost">R 0</span></div>
+                        <div class="result-row total"><span>TOTAL B</span><span id="resAdvTotal">R 0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #666; font-size: 13px;">
+            <p style="margin: 0 0 10px 0;">
+                <strong style="color: var(--green);">🌵 Cactus Craft</strong> — Premium Brewing Ingredients & Solutions
+            </p>
+            <p style="margin: 0 0 10px 0;">
+                <a href="https://www.cactuscraft.co.za" style="color: var(--green); text-decoration: none;">www.cactuscraft.co.za</a>
+                <span style="margin: 0 10px;">|</span>
+                <a href="mailto:info@cactuscraft.co.za" style="color: var(--green); text-decoration: none;">info@cactuscraft.co.za</a>
+            </p>
+            <p style="margin: 0; font-size: 11px; color: #999;">
+                © <span id="currentYear"></span> Cactus Craft. All rights reserved. Calculator formulas based on industry-standard Tinseth IBU calculations.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+const PRODUCTS = {
+    't90': { name: 'T90 Pellet', loss: 14, defaultAlpha: 12, defaultPrice: 350, scenarioA: true, scenarioB: true, hasRawAlpha: true },
+    'lupomax': { name: 'LupoMAX®', loss: 7, defaultAlpha: 20, defaultPrice: 800, utilFactor: 1.1, scenarioA: true, scenarioB: true, hasRawAlpha: true },
+    'lupocore': { name: 'LupoCore™', loss: 10, defaultAlpha: 12, defaultPrice: 500, scenarioA: true, scenarioB: true, hasRawAlpha: true },
+    'cryo': { name: 'Cryo Hops®', loss: 3, defaultAlpha: 24, defaultPrice: 1200, scenarioA: true, scenarioB: true, hasRawAlpha: true },
+    'flex': { name: 'FLEX®', loss: 0, defaultAlpha: 65, defaultPrice: 1800, scenarioB: true, isPreIsomerized: true, isoUtilization: 0.30 },
+    'incognito': { name: 'INCOGNITO®', loss: 0, defaultAlpha: 45, defaultPrice: 2000, scenarioB: true, hasRawAlpha: true },
+    'redihop': { name: 'Redihop®', loss: 0, defaultAlpha: 30, defaultPrice: 2500, scenarioB: true, isRhoIso: true, rhoUtilKettle: 0.45, rhoUtilPostFerm: 0.73, rhoBitternessFactor: 0.7 },
+    'spectrum': { name: 'Spectrum', loss: 0, defaultAlpha: 0, defaultPrice: 3000, scenarioB: true, noIBU: true },
+    'quantum': { name: 'Quantum', loss: 0, defaultAlpha: 0, defaultPrice: 2500, scenarioB: true, noIBU: true },
+    'skyfarm': { name: 'Skyfarm', loss: 0, defaultAlpha: 0, defaultPrice: 4000, scenarioB: true, noIBU: true },
+    'aromahop': { name: 'Aromahop OE', loss: 0, defaultAlpha: 0, defaultPrice: 2200, scenarioB: true, noIBU: true },
+    'co2extract': { name: 'CO₂ Extract', loss: 0, defaultAlpha: 42, defaultPrice: 1500, scenarioB: true, hasRawAlpha: true }
+};
+
+let state = {
+    currency: 'R', batchSize: 20, gravity: 1.050, beerPrice: 25, t90Price: 350, t90Absorption: 14,
+    t90Additions: [{ id: 'a1', product: 't90', time: 60, temp: 100, alpha: 12, amount: 2, price: 350 }],
+    advAdditions: [{ id: 'b1', product: 'flex', time: 60, temp: 100, alpha: 65, amount: 0.37, price: 1800 }]
+};
+
+const get = (id) => document.getElementById(id);
+const generateId = () => Math.random().toString(36).substr(2, 9);
+const fmtMoney = (n) => `${state.currency} ${Math.abs(n).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+function calculateTinsethIBU(kg, alpha, time, temp, hL, grav, utilFact = 1.0) {
+    if (hL <= 0 || alpha <= 0 || temp < 70) return 0;
+    let tempFact = temp < 90 ? (temp - 70) / 20 : 1.0;
+    const gal = hL * 26.417, oz = kg * 35.274;
+    const fG = 1.65 * Math.pow(0.000125, grav - 1);
+    const fT = (1 - Math.exp(-0.04 * time)) / 4.15;
+    return ((oz * alpha * fG * fT * tempFact * utilFact * 75) / gal);
+}
+
+function estimateUtil(prod, time, temp) {
+    const p = PRODUCTS[prod];
+    if (p.noIBU) return 0;
+    if (p.isPreIsomerized) return (temp >= 90 && time >= 45) ? p.isoUtilization * 100 : 0;
+    if (p.isRhoIso) {
+        if (temp < 70) return p.rhoUtilPostFerm * 100;
+        if (temp >= 90 && time >= 45) return p.rhoUtilKettle * 100;
+        return 0;
+    }
+    if (p.hasRawAlpha) {
+        if (temp < 70) return 0;
+        const fG = 1.65 * Math.pow(0.000125, state.gravity - 1);
+        const fT = (1 - Math.exp(-0.04 * time)) / 4.15;
+        let tempFact = temp < 90 ? (temp - 70) / 20 : 1.0;
+        return fG * fT * tempFact * (p.utilFactor || 1.0) * 100;
+    }
+    return 0;
+}
+
+function calcRowIBU(row) {
+    const p = PRODUCTS[row.product];
+    if (p.noIBU) return 0;
+    if (p.isPreIsomerized) {
+        if (row.temp >= 90 && row.time >= 45) {
+            return (row.amount * 1000 * (row.alpha / 100) * p.isoUtilization * 10) / state.batchSize;
+        }
+        return 0;
+    }
+    if (p.isRhoIso) {
+        let util = 0;
+        if (row.temp < 70) util = p.rhoUtilPostFerm;
+        else if (row.temp >= 90 && row.time >= 45) util = p.rhoUtilKettle;
+        return (row.amount * 1000 * (row.alpha / 100) * util * p.rhoBitternessFactor * 10) / state.batchSize;
+    }
+    if (p.hasRawAlpha) {
+        return calculateTinsethIBU(row.amount, row.alpha, row.time, row.temp, state.batchSize, state.gravity, p.utilFactor || 1.0);
+    }
+    return 0;
+}
+
+function init() {
+    // Set current year in footer
+    const yearEl = get('currentYear');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    get('currency').addEventListener('input', (e) => { state.currency = e.target.value; update(); });
+    get('batchSize').addEventListener('input', (e) => { state.batchSize = parseFloat(e.target.value)||0; update(); });
+    get('gravity').addEventListener('input', (e) => { state.gravity = parseFloat(e.target.value)||1.050; update(); });
+    get('beerPrice').addEventListener('input', (e) => { state.beerPrice = parseFloat(e.target.value)||0; update(); });
+    get('t90Price').addEventListener('input', (e) => { state.t90Price = parseFloat(e.target.value)||0; update(); });
+    get('t90Absorption').addEventListener('input', (e) => { state.t90Absorption = parseFloat(e.target.value)||0; update(); });
+    get('btnAddRowA').addEventListener('click', () => { state.t90Additions.push({ id: generateId(), product: 't90', time: 60, temp: 100, alpha: 12, amount: 0, price: state.t90Price }); renderA(); update(); });
+    get('btnAddRowB').addEventListener('click', () => { state.advAdditions.push({ id: generateId(), product: 'flex', time: 60, temp: 100, alpha: 65, amount: 0, price: 1800 }); renderB(); update(); });
+    get('btnCalculate').addEventListener('click', update);
+    get('btnReset').addEventListener('click', () => {
+        state.t90Additions = [{ id: generateId(), product: 't90', time: 60, temp: 100, alpha: 12, amount: 2, price: 350 }];
+        state.advAdditions = [{ id: generateId(), product: 'flex', time: 60, temp: 100, alpha: 65, amount: 0.37, price: 1800 }];
+        renderA(); renderB(); update();
+    });
+    renderA(); renderB(); update();
+}
+
+function renderA() {
+    const cont = get('additionsContainerA');
+    cont.innerHTML = '';
+    state.t90Additions.forEach((row, idx) => {
+        const div = document.createElement('div');
+        div.className = 'addition-row';
+        let opts = '';
+        for (const [k, p] of Object.entries(PRODUCTS)) if (p.scenarioA) opts += `<option value="${k}" ${row.product === k ? 'selected' : ''}>${p.name}</option>`;
+        const util = estimateUtil(row.product, row.time, row.temp);
+        const ibu = calcRowIBU(row);
+        div.innerHTML = `<input type="number" class="time-input" value="${row.time}" placeholder="min" step="1" aria-label="Boil time in minutes">
+            <select class="prod-select" aria-label="Select hop product">${opts}</select>
+            <input type="number" class="temp-input" value="${row.temp}" placeholder="°C" step="1" aria-label="Temperature in Celsius">
+            <input type="number" class="alpha-input" value="${row.alpha}" placeholder="%" step="0.1" aria-label="Alpha acid percentage">
+            <input type="number" class="amount-input" value="${row.amount}" placeholder="kg" step="0.01" aria-label="Dosage in kilograms">
+            <div style="font-size:12px; text-align:center; color:#666; padding:0 4px;" aria-label="Utilization percentage">${util.toFixed(1)}%</div>
+            <div style="font-size:12px; text-align:center; font-weight:bold; padding:0 4px;" aria-label="IBU contribution">${ibu.toFixed(1)}</div>
+            <button class="btn-remove" aria-label="Remove this hop addition">X</button>`;
+        div.querySelector('.time-input').addEventListener('input', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderA(); update(); });
+        div.querySelector('.prod-select').addEventListener('change', (e) => { const p = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = p.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : p.defaultPrice; renderA(); update(); });
+        div.querySelector('.temp-input').addEventListener('input', (e) => { row.temp = parseFloat(e.target.value)||0; renderA(); update(); });
+        div.querySelector('.alpha-input').addEventListener('input', (e) => { row.alpha = parseFloat(e.target.value)||0; renderA(); update(); });
+        div.querySelector('.amount-input').addEventListener('input', (e) => { row.amount = parseFloat(e.target.value)||0; renderA(); update(); });
+        div.querySelector('.btn-remove').addEventListener('click', () => { state.t90Additions.splice(idx, 1); renderA(); update(); });
+        cont.appendChild(div);
+    });
+}
+
+function renderB() {
+    const cont = get('additionsContainerB');
+    cont.innerHTML = '';
+    state.advAdditions.forEach((row, idx) => {
+        const div = document.createElement('div');
+        div.className = 'addition-row';
+        let opts = '';
+        for (const [k, p] of Object.entries(PRODUCTS)) if (p.scenarioB) opts += `<option value="${k}" ${row.product === k ? 'selected' : ''}>${p.name}</option>`;
+        const util = estimateUtil(row.product, row.time, row.temp);
+        const ibu = calcRowIBU(row);
+        div.innerHTML = `<input type="number" class="time-input" value="${row.time}" placeholder="min" step="1" aria-label="Boil time in minutes">
+            <select class="prod-select" aria-label="Select hop product">${opts}</select>
+            <input type="number" class="temp-input" value="${row.temp}" placeholder="°C" step="1" aria-label="Temperature in Celsius">
+            <input type="number" class="alpha-input" value="${row.alpha}" placeholder="%" step="0.1" aria-label="Alpha acid percentage">
+            <input type="number" class="amount-input" value="${row.amount}" placeholder="kg" step="0.01" aria-label="Dosage in kilograms">
+            <div style="font-size:12px; text-align:center; color:#666; padding:0 4px;" aria-label="Utilization percentage">${util.toFixed(1)}%</div>
+            <div style="font-size:12px; text-align:center; font-weight:bold; padding:0 4px;" aria-label="IBU contribution">${ibu.toFixed(1)}</div>
+            <button class="btn-remove" aria-label="Remove this hop addition">X</button>`;
+        div.querySelector('.time-input').addEventListener('input', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderB(); update(); });
+        div.querySelector('.prod-select').addEventListener('change', (e) => { const p = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = p.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : p.defaultPrice; renderB(); update(); });
+        div.querySelector('.temp-input').addEventListener('input', (e) => { row.temp = parseFloat(e.target.value)||0; renderB(); update(); });
+        div.querySelector('.alpha-input').addEventListener('input', (e) => { row.alpha = parseFloat(e.target.value)||0; renderB(); update(); });
+        div.querySelector('.amount-input').addEventListener('input', (e) => { row.amount = parseFloat(e.target.value)||0; renderB(); update(); });
+        div.querySelector('.btn-remove').addEventListener('click', () => { state.advAdditions.splice(idx, 1); renderB(); update(); });
+        cont.appendChild(div);
+    });
+}
+
+function update() {
+    state.t90Additions.forEach(r => { if (r.product === 't90') r.price = state.t90Price; });
+    state.advAdditions.forEach(r => { if (r.product === 't90') r.price = state.t90Price; });
+    
+    let kgA = 0, ibuA = 0, costA = 0, lossA = 0;
+    state.t90Additions.forEach(r => {
+        const p = PRODUCTS[r.product];
+        kgA += r.amount;
+        costA += r.amount * r.price;
+        lossA += r.amount * p.loss;
+        ibuA += calcRowIBU(r);
+    });
+    const revLostA = lossA * state.beerPrice, totalA = costA + revLostA;
+    get('resT90TotalKg').innerText = `${kgA.toFixed(2)} kg`;
+    get('resT90IBU').innerText = ibuA.toFixed(1);
+    get('resT90Cost').innerText = fmtMoney(costA);
+    get('resT90Loss').innerText = `${lossA.toFixed(1)} L`;
+    get('resT90RevLost').innerText = fmtMoney(revLostA);
+    get('resT90Total').innerText = fmtMoney(totalA);
+    
+    let kgB = 0, ibuB = 0, costB = 0, lossB = 0;
+    state.advAdditions.forEach(r => {
+        const p = PRODUCTS[r.product];
+        kgB += r.amount;
+        costB += r.amount * r.price;
+        lossB += r.amount * p.loss;
+        ibuB += calcRowIBU(r);
+    });
+    const revLostB = lossB * state.beerPrice, totalB = costB + revLostB;
+    get('resAdvTotalKg').innerText = `${kgB.toFixed(3)} kg`;
+    get('resAdvIBU').innerText = ibuB.toFixed(1);
+    get('resAdvCost').innerText = fmtMoney(costB);
+    get('resAdvLoss').innerText = `${lossB.toFixed(1)} L`;
+    get('resAdvRevLost').innerText = fmtMoney(revLostB);
+    get('resAdvTotal').innerText = fmtMoney(totalB);
+    
+    const benefit = totalA - totalB;
+    const disp = get('netBenefitDisplay'), txt = get('netBenefitText');
+    if (benefit >= 0) {
+        disp.innerText = `+${fmtMoney(benefit)}`;
+        txt.innerText = "Savings per Batch";
+        disp.parentElement.style.background = 'var(--black)';
+        disp.parentElement.style.borderTopColor = 'var(--green)';
+    } else {
+        disp.innerText = `-${fmtMoney(Math.abs(benefit))}`;
+        txt.innerText = "Extra Cost per Batch";
+        disp.parentElement.style.background = 'var(--red)';
+        disp.parentElement.style.borderTopColor = '#b71c1c';
+    }
+    document.querySelectorAll('.currency-label').forEach(el => el.innerText = state.currency);
+}
+
+init();
+    </script>
+</body>
+</html>

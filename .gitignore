@@ -1,0 +1,14 @@
+# TDS PDF documents (reference only, not needed in repo)
+*.pdf
+
+# Windows system files
+desktop.ini
+Thumbs.db
+
+# IDE/Editor folders
+.claude/
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
