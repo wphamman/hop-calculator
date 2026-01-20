@@ -71,6 +71,36 @@
         .scenario-b .addition-row { background: #e8f5e9; border-color: #c8e6c9; }
         .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
         .result-row.total span:last-child { font-size: 16px; font-weight: bold; color: var(--black); }
+
+        /* Product info tooltip styles */
+        .product-select-wrapper { position: relative; display: flex; align-items: center; gap: 4px; }
+        .product-select-wrapper select { flex: 1; }
+        .info-btn {
+            background: none; border: 1px solid #ccc; border-radius: 50%; width: 18px; height: 18px;
+            font-size: 11px; color: #666; cursor: pointer; padding: 0; line-height: 16px; flex-shrink: 0;
+        }
+        .info-btn:hover { background: #f0f0f0; border-color: #999; }
+        .product-tooltip {
+            display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+            background: #1a1a1a; color: #fff; padding: 10px; border-radius: 4px; margin-top: 4px;
+            font-size: 11px; line-height: 1.4; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .product-tooltip.show { display: block; }
+        .product-tooltip::before {
+            content: ''; position: absolute; top: -6px; left: 20px;
+            border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid #1a1a1a;
+        }
+        .product-tooltip strong { color: var(--green); display: block; margin-bottom: 4px; }
+        .product-tooltip .tt-row { margin: 3px 0; }
+        .product-tooltip .tt-label { color: #999; }
+
+        /* Warning styles */
+        .row-warning {
+            grid-column: 1 / -1; background: #fff8e1; border: 1px solid #ffcc02; border-radius: 3px;
+            padding: 6px 10px; margin-top: 4px; font-size: 11px; color: #7a6200; display: flex; align-items: center; gap: 6px;
+        }
+        .row-warning::before { content: '⚠️'; }
+        .addition-row.has-warning { border-color: #ffcc02; }
     </style>
 </head>
 <body>
@@ -166,18 +196,96 @@
 
     <script>
 const PRODUCTS = {
-    't90': { name: 'T90 Pellet', loss: 14, defaultAlpha: 12, defaultPrice: 350, scenarioA: true, scenarioB: true, hasRawAlpha: true },
-    'lupomax': { name: 'LupoMAX®', loss: 7, defaultAlpha: 20, defaultPrice: 800, utilFactor: 1.1, scenarioA: true, scenarioB: true, hasRawAlpha: true },
-    'lupocore': { name: 'LupoCore™', loss: 10, defaultAlpha: 12, defaultPrice: 500, scenarioA: true, scenarioB: true, hasRawAlpha: true },
-    'cryo': { name: 'Cryo Hops®', loss: 3, defaultAlpha: 24, defaultPrice: 1200, scenarioA: true, scenarioB: true, hasRawAlpha: true },
-    'flex': { name: 'FLEX®', loss: 0, defaultAlpha: 65, defaultPrice: 1800, scenarioB: true, isPreIsomerized: true, isoUtilization: 0.30 },
-    'incognito': { name: 'INCOGNITO®', loss: 0, defaultAlpha: 45, defaultPrice: 2000, scenarioB: true, hasRawAlpha: true },
-    'redihop': { name: 'Redihop®', loss: 0, defaultAlpha: 30, defaultPrice: 2500, scenarioB: true, isRhoIso: true, rhoUtilKettle: 0.45, rhoUtilPostFerm: 0.73, rhoBitternessFactor: 0.7 },
-    'spectrum': { name: 'Spectrum', loss: 0, defaultAlpha: 0, defaultPrice: 3000, scenarioB: true, noIBU: true },
-    'quantum': { name: 'Quantum', loss: 0, defaultAlpha: 0, defaultPrice: 2500, scenarioB: true, noIBU: true },
-    'skyfarm': { name: 'Skyfarm', loss: 0, defaultAlpha: 0, defaultPrice: 4000, scenarioB: true, noIBU: true },
-    'aromahop': { name: 'Aromahop OE', loss: 0, defaultAlpha: 0, defaultPrice: 2200, scenarioB: true, noIBU: true },
-    'co2extract': { name: 'CO₂ Extract', loss: 0, defaultAlpha: 42, defaultPrice: 1500, scenarioB: true, hasRawAlpha: true }
+    't90': {
+        name: 'T90 Pellet', loss: 14, defaultAlpha: 12, defaultPrice: 350, scenarioA: true, scenarioB: true, hasRawAlpha: true,
+        desc: 'Standard hop pellet for all brewing stages',
+        use: 'Kettle, Whirlpool, or Dry Hop',
+        benefit: 'Versatile, widely available'
+    },
+    'lupomax': {
+        name: 'LupoMAX®', loss: 7, defaultAlpha: 20, defaultPrice: 800, utilFactor: 1.1, scenarioA: true, scenarioB: true, hasRawAlpha: true,
+        desc: 'Concentrated lupulin pellet with enhanced utilization',
+        use: 'Kettle (45+ min), Whirlpool, or Dry Hop',
+        benefit: '10% better utilization, 50% less wort loss vs T90'
+    },
+    'lupocore': {
+        name: 'LupoCore™', loss: 10, defaultAlpha: 12, defaultPrice: 500, scenarioA: true, scenarioB: true, hasRawAlpha: true,
+        desc: 'Refined pellet with reduced vegetal matter',
+        use: 'Kettle, Whirlpool, or Dry Hop',
+        benefit: 'Cleaner mouthfeel, less trub than T90'
+    },
+    'cryo': {
+        name: 'Cryo Hops®', loss: 3, defaultAlpha: 24, defaultPrice: 1200, scenarioA: true, scenarioB: true, hasRawAlpha: true,
+        desc: 'Concentrated lupulin powder (cryogenic separation)',
+        use: 'Whirlpool or Dry Hop preferred',
+        benefit: 'Use 50% less by weight, minimal wort loss',
+        warnIf: (time, temp) => time > 30 && temp >= 90,
+        warnMsg: 'Cryo Hops are best for late additions (whirlpool/dry hop) to preserve aroma'
+    },
+    'flex': {
+        name: 'FLEX®', loss: 0, defaultAlpha: 65, defaultPrice: 1800, scenarioB: true, isPreIsomerized: true, isoUtilization: 0.30,
+        desc: 'Pre-isomerized bittering extract (contains iso-alpha acids)',
+        use: 'Kettle only: 45+ min at 90°C+',
+        benefit: 'Zero wort loss, 25-35% utilization',
+        warnIf: (time, temp) => time < 45 || temp < 90,
+        warnMsg: 'FLEX requires 45+ min at 90°C+ for proper isomerization'
+    },
+    'incognito': {
+        name: 'INCOGNITO®', loss: 0, defaultAlpha: 45, defaultPrice: 2000, scenarioB: true, hasRawAlpha: true,
+        desc: 'Flowable hop extract for intense aroma/flavor',
+        use: 'Whirlpool (0-15 min) at 80-95°C',
+        benefit: 'Zero wort loss, concentrated aroma',
+        warnIf: (time, temp) => time > 20 && temp >= 90,
+        warnMsg: 'INCOGNITO is optimized for whirlpool (0-15 min). Extended boiling reduces aroma.'
+    },
+    'redihop': {
+        name: 'Redihop®', loss: 0, defaultAlpha: 30, defaultPrice: 2500, scenarioB: true, isRhoIso: true, rhoUtilKettle: 0.45, rhoUtilPostFerm: 0.73, rhoBitternessFactor: 0.7,
+        desc: 'Rho-isomerized extract for light-stable bitterness',
+        use: 'Post-fermentation (<20°C) or Kettle (90°C+, 45+ min)',
+        benefit: 'Light-stable, smooth bitterness, 0.7× perceived IBU',
+        warnIf: (time, temp) => temp >= 70 && temp < 90,
+        warnMsg: 'Redihop works best post-ferm (<20°C) or full boil (90°C+). Mid-temps give poor utilization.'
+    },
+    'spectrum': {
+        name: 'Spectrum', loss: 0, defaultAlpha: 0, defaultPrice: 3000, scenarioB: true, noIBU: true,
+        desc: 'Hop oil paste for dry hop aroma (no bitterness)',
+        use: 'Dry Hop / Brite Tank only (<30°C)',
+        benefit: 'Zero wort loss, 1:5 to 1:8 replacement ratio vs pellets',
+        warnIf: (time, temp) => temp > 40,
+        warnMsg: 'Spectrum is for cold-side only. Heat destroys delicate hop oils.'
+    },
+    'quantum': {
+        name: 'Quantum', loss: 0, defaultAlpha: 0, defaultPrice: 2500, scenarioB: true, noIBU: true,
+        desc: 'Water-soluble hop aroma extract (no bitterness)',
+        use: 'Brite Tank only (<10°C)',
+        benefit: 'Zero loss, 100% utilization, 0.5oz = 1lb T90',
+        warnIf: (time, temp) => temp > 30,
+        warnMsg: 'Quantum is for brite tank only. Add cold to preserve aroma.'
+    },
+    'skyfarm': {
+        name: 'Skyfarm', loss: 0, defaultAlpha: 0, defaultPrice: 4000, scenarioB: true, noIBU: true,
+        desc: 'Terpene-based fruit flavor extract (not hop-derived)',
+        use: 'Brite Tank only (<10°C)',
+        benefit: 'No sugar/calories, no refermentation risk',
+        warnIf: (time, temp) => temp > 30,
+        warnMsg: 'Skyfarm is for brite tank only. Heat destroys fruit aromatics.'
+    },
+    'aromahop': {
+        name: 'Aromahop OE', loss: 0, defaultAlpha: 0, defaultPrice: 2200, scenarioB: true, noIBU: true,
+        desc: 'Hop oil extract for aroma (alpha acids removed)',
+        use: 'Late Kettle (15 min) or Whirlpool',
+        benefit: '1kg = 15kg pellets (oil equivalent), light-stable',
+        warnIf: (time, temp) => time > 20 && temp >= 95,
+        warnMsg: 'Aromahop OE is best added late (≤15 min). Extended boiling reduces aroma.'
+    },
+    'co2extract': {
+        name: 'CO₂ Extract', loss: 0, defaultAlpha: 42, defaultPrice: 1500, scenarioB: true, hasRawAlpha: true,
+        desc: 'Pure hop resin extract for bittering',
+        use: 'Kettle (start of boil to 10 min in)',
+        benefit: 'Zero wort loss, 32-38% utilization, long shelf life',
+        warnIf: (time, temp) => time < 30 && temp >= 90,
+        warnMsg: 'CO₂ Extract is best added early in the boil for efficient isomerization.'
+    }
 };
 
 let state = {
@@ -266,25 +374,41 @@ function renderA() {
     cont.innerHTML = '';
     state.t90Additions.forEach((row, idx) => {
         const div = document.createElement('div');
-        div.className = 'addition-row';
+        const p = PRODUCTS[row.product];
+        const hasWarning = p.warnIf && p.warnIf(row.time, row.temp);
+        div.className = 'addition-row' + (hasWarning ? ' has-warning' : '');
         let opts = '';
-        for (const [k, p] of Object.entries(PRODUCTS)) if (p.scenarioA) opts += `<option value="${k}" ${row.product === k ? 'selected' : ''}>${p.name}</option>`;
+        for (const [k, prod] of Object.entries(PRODUCTS)) if (prod.scenarioA) opts += `<option value="${k}" ${row.product === k ? 'selected' : ''}>${prod.name}</option>`;
         const util = estimateUtil(row.product, row.time, row.temp);
         const ibu = calcRowIBU(row);
         div.innerHTML = `<input type="number" class="time-input" value="${row.time}" placeholder="min" step="1" aria-label="Boil time in minutes">
-            <select class="prod-select" aria-label="Select hop product">${opts}</select>
+            <div class="product-select-wrapper">
+                <select class="prod-select" aria-label="Select hop product">${opts}</select>
+                <button type="button" class="info-btn" aria-label="Product info">i</button>
+                <div class="product-tooltip">
+                    <strong>${p.name}</strong>
+                    <div class="tt-row">${p.desc}</div>
+                    <div class="tt-row"><span class="tt-label">Use:</span> ${p.use}</div>
+                    <div class="tt-row"><span class="tt-label">Benefit:</span> ${p.benefit}</div>
+                </div>
+            </div>
             <input type="number" class="temp-input" value="${row.temp}" placeholder="°C" step="1" aria-label="Temperature in Celsius">
             <input type="number" class="alpha-input" value="${row.alpha}" placeholder="%" step="0.1" aria-label="Alpha acid percentage">
             <input type="number" class="amount-input" value="${row.amount}" placeholder="kg" step="0.01" aria-label="Dosage in kilograms">
             <div style="font-size:12px; text-align:center; color:#666; padding:0 4px;" aria-label="Utilization percentage">${util.toFixed(1)}%</div>
             <div style="font-size:12px; text-align:center; font-weight:bold; padding:0 4px;" aria-label="IBU contribution">${ibu.toFixed(1)}</div>
-            <button class="btn-remove" aria-label="Remove this hop addition">X</button>`;
+            <button class="btn-remove" aria-label="Remove this hop addition">X</button>
+            ${hasWarning ? `<div class="row-warning">${p.warnMsg}</div>` : ''}`;
         div.querySelector('.time-input').addEventListener('input', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderA(); update(); });
-        div.querySelector('.prod-select').addEventListener('change', (e) => { const p = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = p.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : p.defaultPrice; renderA(); update(); });
+        div.querySelector('.prod-select').addEventListener('change', (e) => { const pr = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = pr.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : pr.defaultPrice; renderA(); update(); });
         div.querySelector('.temp-input').addEventListener('input', (e) => { row.temp = parseFloat(e.target.value)||0; renderA(); update(); });
         div.querySelector('.alpha-input').addEventListener('input', (e) => { row.alpha = parseFloat(e.target.value)||0; renderA(); update(); });
         div.querySelector('.amount-input').addEventListener('input', (e) => { row.amount = parseFloat(e.target.value)||0; renderA(); update(); });
         div.querySelector('.btn-remove').addEventListener('click', () => { state.t90Additions.splice(idx, 1); renderA(); update(); });
+        const infoBtn = div.querySelector('.info-btn');
+        const tooltip = div.querySelector('.product-tooltip');
+        infoBtn.addEventListener('click', (e) => { e.stopPropagation(); tooltip.classList.toggle('show'); });
+        document.addEventListener('click', () => tooltip.classList.remove('show'), { once: true });
         cont.appendChild(div);
     });
 }
@@ -294,25 +418,41 @@ function renderB() {
     cont.innerHTML = '';
     state.advAdditions.forEach((row, idx) => {
         const div = document.createElement('div');
-        div.className = 'addition-row';
+        const p = PRODUCTS[row.product];
+        const hasWarning = p.warnIf && p.warnIf(row.time, row.temp);
+        div.className = 'addition-row' + (hasWarning ? ' has-warning' : '');
         let opts = '';
-        for (const [k, p] of Object.entries(PRODUCTS)) if (p.scenarioB) opts += `<option value="${k}" ${row.product === k ? 'selected' : ''}>${p.name}</option>`;
+        for (const [k, prod] of Object.entries(PRODUCTS)) if (prod.scenarioB) opts += `<option value="${k}" ${row.product === k ? 'selected' : ''}>${prod.name}</option>`;
         const util = estimateUtil(row.product, row.time, row.temp);
         const ibu = calcRowIBU(row);
         div.innerHTML = `<input type="number" class="time-input" value="${row.time}" placeholder="min" step="1" aria-label="Boil time in minutes">
-            <select class="prod-select" aria-label="Select hop product">${opts}</select>
+            <div class="product-select-wrapper">
+                <select class="prod-select" aria-label="Select hop product">${opts}</select>
+                <button type="button" class="info-btn" aria-label="Product info">i</button>
+                <div class="product-tooltip">
+                    <strong>${p.name}</strong>
+                    <div class="tt-row">${p.desc}</div>
+                    <div class="tt-row"><span class="tt-label">Use:</span> ${p.use}</div>
+                    <div class="tt-row"><span class="tt-label">Benefit:</span> ${p.benefit}</div>
+                </div>
+            </div>
             <input type="number" class="temp-input" value="${row.temp}" placeholder="°C" step="1" aria-label="Temperature in Celsius">
             <input type="number" class="alpha-input" value="${row.alpha}" placeholder="%" step="0.1" aria-label="Alpha acid percentage">
             <input type="number" class="amount-input" value="${row.amount}" placeholder="kg" step="0.01" aria-label="Dosage in kilograms">
             <div style="font-size:12px; text-align:center; color:#666; padding:0 4px;" aria-label="Utilization percentage">${util.toFixed(1)}%</div>
             <div style="font-size:12px; text-align:center; font-weight:bold; padding:0 4px;" aria-label="IBU contribution">${ibu.toFixed(1)}</div>
-            <button class="btn-remove" aria-label="Remove this hop addition">X</button>`;
+            <button class="btn-remove" aria-label="Remove this hop addition">X</button>
+            ${hasWarning ? `<div class="row-warning">${p.warnMsg}</div>` : ''}`;
         div.querySelector('.time-input').addEventListener('input', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderB(); update(); });
-        div.querySelector('.prod-select').addEventListener('change', (e) => { const p = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = p.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : p.defaultPrice; renderB(); update(); });
+        div.querySelector('.prod-select').addEventListener('change', (e) => { const pr = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = pr.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : pr.defaultPrice; renderB(); update(); });
         div.querySelector('.temp-input').addEventListener('input', (e) => { row.temp = parseFloat(e.target.value)||0; renderB(); update(); });
         div.querySelector('.alpha-input').addEventListener('input', (e) => { row.alpha = parseFloat(e.target.value)||0; renderB(); update(); });
         div.querySelector('.amount-input').addEventListener('input', (e) => { row.amount = parseFloat(e.target.value)||0; renderB(); update(); });
         div.querySelector('.btn-remove').addEventListener('click', () => { state.advAdditions.splice(idx, 1); renderB(); update(); });
+        const infoBtn = div.querySelector('.info-btn');
+        const tooltip = div.querySelector('.product-tooltip');
+        infoBtn.addEventListener('click', (e) => { e.stopPropagation(); tooltip.classList.toggle('show'); });
+        document.addEventListener('click', () => tooltip.classList.remove('show'), { once: true });
         cont.appendChild(div);
     });
 }
