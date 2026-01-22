@@ -259,7 +259,7 @@ const PRODUCTS = {
         name: 'Quantum', loss: 0, defaultAlpha: 0, defaultPrice: 2500, scenarioB: true, noIBU: true,
         desc: 'Water-soluble hop aroma extract (no bitterness)',
         use: 'Brite Tank only (<10°C)',
-        benefit: 'Zero loss, 100% utilization, 0.5oz = 1lb T90',
+        benefit: 'Zero loss, 0.065-0.5 mL/L typical (0.3-2 oz/bbl)',
         warnIf: (time, temp) => temp > 30,
         warnMsg: 'Quantum is for brite tank only. Add cold to preserve aroma.'
     },
@@ -400,11 +400,11 @@ function renderA() {
             <div style="font-size:12px; text-align:center; font-weight:bold; padding:0 4px;" aria-label="IBU contribution">${ibu.toFixed(1)}</div>
             <button class="btn-remove" aria-label="Remove this hop addition">X</button>
             ${hasWarning ? `<div class="row-warning">${p.warnMsg}</div>` : ''}`;
-        div.querySelector('.time-input').addEventListener('input', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderA(); update(); });
+        div.querySelector('.time-input').addEventListener('change', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderA(); update(); });
         div.querySelector('.prod-select').addEventListener('change', (e) => { const pr = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = pr.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : pr.defaultPrice; renderA(); update(); });
-        div.querySelector('.temp-input').addEventListener('input', (e) => { row.temp = parseFloat(e.target.value)||0; renderA(); update(); });
-        div.querySelector('.alpha-input').addEventListener('input', (e) => { row.alpha = parseFloat(e.target.value)||0; renderA(); update(); });
-        div.querySelector('.amount-input').addEventListener('input', (e) => { row.amount = parseFloat(e.target.value)||0; renderA(); update(); });
+        div.querySelector('.temp-input').addEventListener('change', (e) => { row.temp = parseFloat(e.target.value)||0; renderA(); update(); });
+        div.querySelector('.alpha-input').addEventListener('change', (e) => { row.alpha = parseFloat(e.target.value)||0; renderA(); update(); });
+        div.querySelector('.amount-input').addEventListener('change', (e) => { row.amount = parseFloat(e.target.value)||0; renderA(); update(); });
         div.querySelector('.btn-remove').addEventListener('click', () => { state.t90Additions.splice(idx, 1); renderA(); update(); });
         const infoBtn = div.querySelector('.info-btn');
         const tooltip = div.querySelector('.product-tooltip');
@@ -444,11 +444,11 @@ function renderB() {
             <div style="font-size:12px; text-align:center; font-weight:bold; padding:0 4px;" aria-label="IBU contribution">${ibu.toFixed(1)}</div>
             <button class="btn-remove" aria-label="Remove this hop addition">X</button>
             ${hasWarning ? `<div class="row-warning">${p.warnMsg}</div>` : ''}`;
-        div.querySelector('.time-input').addEventListener('input', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderB(); update(); });
+        div.querySelector('.time-input').addEventListener('change', (e) => { row.time = parseFloat(e.target.value)||0; if (row.time >= 45) row.temp = 100; else if (row.time >= 10) row.temp = 95; else if (row.time > 0) row.temp = 85; else row.temp = 20; renderB(); update(); });
         div.querySelector('.prod-select').addEventListener('change', (e) => { const pr = PRODUCTS[e.target.value]; row.product = e.target.value; row.alpha = pr.defaultAlpha; row.price = e.target.value === 't90' ? state.t90Price : pr.defaultPrice; renderB(); update(); });
-        div.querySelector('.temp-input').addEventListener('input', (e) => { row.temp = parseFloat(e.target.value)||0; renderB(); update(); });
-        div.querySelector('.alpha-input').addEventListener('input', (e) => { row.alpha = parseFloat(e.target.value)||0; renderB(); update(); });
-        div.querySelector('.amount-input').addEventListener('input', (e) => { row.amount = parseFloat(e.target.value)||0; renderB(); update(); });
+        div.querySelector('.temp-input').addEventListener('change', (e) => { row.temp = parseFloat(e.target.value)||0; renderB(); update(); });
+        div.querySelector('.alpha-input').addEventListener('change', (e) => { row.alpha = parseFloat(e.target.value)||0; renderB(); update(); });
+        div.querySelector('.amount-input').addEventListener('change', (e) => { row.amount = parseFloat(e.target.value)||0; renderB(); update(); });
         div.querySelector('.btn-remove').addEventListener('click', () => { state.advAdditions.splice(idx, 1); renderB(); update(); });
         const infoBtn = div.querySelector('.info-btn');
         const tooltip = div.querySelector('.product-tooltip');
