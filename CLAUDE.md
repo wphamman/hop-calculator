@@ -103,7 +103,7 @@ Product specifications validated against manufacturer Technical Data Sheets (Jan
 |---------|---------|-----------|----------|--------|
 | **Spectrum** | 0% (oil-based) | 0 L/kg | Dry hop alternative, 1:5-1:8 vs pellets | BarthHaas TDS |
 | **Aromahop® OE** | <0.2% | 0 L/kg | Hop aroma, 1kg = 15kg pellets (oil equiv) | BarthHaas TDS |
-| **Quantum** | 0% | 0 L/kg | Brite tank aroma, 0.065-0.5 mL/L (0.3-2 oz/bbl) | Abstrax TDS |
+| **Quantum** | 0% | 0 L/kg | Brite tank aroma, 0.5oz ≈ 1lb T90; dose 0.3-2 oz/bbl | Abstrax TDS |
 | **Skyfarm** | 0% | 0 L/kg | Fruit flavors (terpene-based) | Abstrax TDS |
 
 *\* Estimated values - not explicitly stated in TDS*
